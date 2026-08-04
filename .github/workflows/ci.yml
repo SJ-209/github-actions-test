@@ -39,6 +39,25 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v6
 
+      - name: Verify Docker Hub credentials
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          missing=0
+          if [ -z "$DOCKERHUB_USERNAME" ]; then
+            echo "::error::DOCKERHUB_USERNAME is empty. Add it as a repository variable (Settings → Secrets and variables → Actions → Variables)."
+            missing=1
+          fi
+          if [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo "::error::DOCKERHUB_TOKEN is empty. Add a Docker Hub access token as a repository secret (Settings → Secrets and variables → Actions → Secrets)."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "Docker Hub credentials are present."
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
