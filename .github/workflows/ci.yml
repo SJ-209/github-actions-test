@@ -39,57 +39,17 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Prepare Docker Hub credentials
-        id: dockerhub
-        env:
-          # Username is usually a Variable; some people store it as a Secret instead.
-          RAW_USERNAME: ${{ vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME }}
-          RAW_TOKEN: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKERHUB_PASSWORD }}
-        run: |
-          trim() {
-            # Strip CR/LF, surrounding quotes, and leading/trailing whitespace
-            printf '%s' "$1" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//"
-          }
-
-          USERNAME="$(trim "$RAW_USERNAME")"
-          TOKEN="$(trim "$RAW_TOKEN")"
-
-          missing=0
-          if [ -z "$USERNAME" ]; then
-            echo "::error::DOCKERHUB_USERNAME is empty. Add your Docker Hub username as a repository Variable (Settings → Secrets and variables → Actions → Variables), or as a Secret named DOCKERHUB_USERNAME."
-            missing=1
-          fi
-          if [ -z "$TOKEN" ]; then
-            echo "::error::DOCKERHUB_TOKEN is empty. Create a Docker Hub Access Token (Read & Write) and add it as a repository Secret named DOCKERHUB_TOKEN."
-            missing=1
-          fi
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
-
-          echo "username length: ${#USERNAME}"
-          echo "token length: ${#TOKEN}"
-          if [[ "$TOKEN" != dckr_pat_* ]]; then
-            echo "::warning::DOCKERHUB_TOKEN does not look like a Docker Hub personal access token (expected prefix dckr_pat_). Use an Access Token from hub.docker.com, not your account password."
-          fi
-
-          echo "::add-mask::$TOKEN"
-          {
-            echo "username=$USERNAME"
-            echo "token=$TOKEN"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v4
-        with:
-          username: ${{ steps.dockerhub.outputs.username }}
-          password: ${{ steps.dockerhub.outputs.token }}
+      - name: Login to Docker Hub 
+        uses: docker/login-action@v4 
+        with: 
+          username: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }} 
+          password: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
-            ${{ steps.dockerhub.outputs.username }}/cicd:latest
-            ${{ steps.dockerhub.outputs.username }}/cicd:${{ github.sha }}
+            ${{ vars.DOCKERHUB_USERNAME }}/cicd:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/cicd:${{ github.sha }}
