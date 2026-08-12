@@ -1,5 +1,13 @@
 {
-    "version": "5",
+    "version": "7",
     "dialect": "postgresql",
-    "entries": []
+    "entries": [
+      {
+        "idx": 0,
+        "version": "7",
+        "when": 1783458373008,
+        "tag": "0000_dapper_jack_power",
+        "breakpoints": true
+      }
+    ]
   }
