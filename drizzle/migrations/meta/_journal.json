@@ -15,6 +15,13 @@
       "when": 1786599371621,
       "tag": "0001_young_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786602141150,
+      "tag": "0002_backfill_email_address",
+      "breakpoints": true
     }
   ]
 }
