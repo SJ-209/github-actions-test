@@ -22,4 +22,4 @@ Challenge:
    - `npm test`
 11. Commit the new files and push your branch to GitHub.
 12. Open a pull request into `main` and verify that the CI job passes.
-13. Merge the pull request and verify that the Deploy job passes
+13. Merge the pull request and verify that the Deploy job passes.
